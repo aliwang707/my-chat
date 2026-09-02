@@ -2,13 +2,15 @@
  * 该接口负责校验会话归属、保存消息记录，并以 SSE 方式将模型输出按 token 逐步返回。
  * 设计目标是尽量减少长回复等待时间，同时保持后端对用户身份、输入长度和调用频率的控制。
  */
+
+
 import { env, supabase } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { ChatRequestSchema } from "@/lib/validation";
 import { rateLimit } from "@/lib/rate-limit";
 
-const FIRST_BYTE_TIMEOUT = 10000;
+const FIRST_BYTE_TIMEOUT = 30000;
 
 export async function POST(request: NextRequest) {
   try {
@@ -96,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     let response;
     try {
-      response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+      response = await fetch(`${env.SILICONFLOW_BASE_URL}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,8 +108,8 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify({
           model: env.AI_MODEL,
           messages: [
-            { 
-              role: 'system', 
+            {
+              role: 'system',
               content: `你是一个专业、友好的AI助手。当需要输出表格时，**必须使用标准Markdown表格语法**：
 - 表头与内容之间用分隔线（|---|）隔开
 - 列数必须一致
@@ -116,12 +118,12 @@ export async function POST(request: NextRequest) {
 | --- | --- | --- |
 | 1 | 创建项目 | 确保Node.js已安装 |
 
-请确保所有表格都符合此格式。代码块请使用正确的语法高亮。` 
+请确保所有表格都符合此格式。代码块请使用正确的语法高亮。`
             },
             ...recentMessages,
           ],
           stream: true,
-          max_tokens: env.AI_MAX_TOKENS,
+          max_tokens: Math.min(env.AI_MAX_TOKENS, 1024),
           temperature: env.AI_TEMPERATURE,
           top_p: env.AI_TOP_P,
         }),
@@ -135,7 +137,7 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`AI 服务返回错误 ${response.status}:`, errorText);
-      return NextResponse.json({ error: `AI 服务暂时不可用 (${response.status})` }, { status: 502 });
+      return NextResponse.json({ error: `AI 服务暂时不可用 (${response.status})`, detail: errorText.slice(0, 300)  }, { status: 502 });
     }
     if (!response.body) {
       return NextResponse.json({ error: '无法获取响应流' }, { status: 502 });
@@ -281,8 +283,8 @@ export async function POST(request: NextRequest) {
     console.error('未捕获的异常:', error);
     console.error('堆栈:', error.stack);
     return NextResponse.json(
-      { 
-        error: '服务器内部错误', 
+      {
+        error: '服务器内部错误',
         detail: error.message,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       },

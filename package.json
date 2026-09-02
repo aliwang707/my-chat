@@ -2,22 +2,40 @@
   "name": "my-chat",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.7.6",
+    "@supabase/supabase-js": "^2.112.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "lodash": "^4.18.1",
     "next": "16.2.12",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.1",
+    "remark-gfm": "^4.0.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/lodash": "^4.17.25",
+    "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.20.2",
+    "typescript": "^5",
+    "vitest": "^2.1.8"
   }
 }

@@ -1,4 +1,25 @@
+/* ✅ Tailwind v4：使用 @import 替代旧的 @tailwind 指令 */
 @import "tailwindcss";
+
+/* ✅ Tailwind v4：替代旧的 darkMode: 'class'，识别 .dark 类 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 全局过渡动画 */
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ✅ 移除 @apply，直接使用 CSS 变量定义基础样式 */
+body {
+  background-color: var(--color-slate-50);
+  color: var(--color-gray-900);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark body {
+  background-color: var(--color-gray-900);
+  color: var(--color-gray-100);
+}
 
 :root {
   --background: #ffffff;
@@ -8,8 +29,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +38,50 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ✅ Markdown 内容区跟随主题（移除 @apply） */
+.markdown-body {
+  color: var(--color-gray-900);
+}
+
+html.dark .markdown-body {
+  color: var(--color-gray-100);
+}
+
+.markdown-body pre {
+  background-color: var(--color-gray-100);
+}
+
+html.dark .markdown-body pre {
+  background-color: var(--color-gray-800);
+}
+
+.markdown-body code:not(pre code) {
+  background-color: var(--color-gray-200);
+  color: var(--color-gray-900);
+  padding: var(--spacing-0-5) var(--spacing-1);
+  border-radius: var(--radius-md);
+}
+
+html.dark .markdown-body code:not(pre code) {
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-100);
+}
+
+/* 消息气泡容器防撑破 */
+.message-bubble {
+  max-width: 100%; /* 或 75% */
+  overflow-x: hidden; /* 隐藏横向溢出 */
+  word-break: break-all; /* 强制长单词/代码换行 */
+  overflow-wrap: break-word;
+}
+
+/* 代码块容器防撑破 */
+.markdown-body pre {
+  max-width: 100%;
+  overflow-x: auto; /* 代码块内部允许横向滚动 */
+  white-space: pre; /* 保持代码格式 */
+}
+
+.markdown-body code {
+  word-break: break-all;
 }

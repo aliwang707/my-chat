@@ -1,0 +1,7 @@
+{
+    "Codegeex.SidebarUI.LanguagePreference": "中文",
+    "chat.disableAIFeatures": false,
+    "github.copilot.enable": {
+    "*": false
+  }
+}

@@ -6,6 +6,13 @@ AI 聊天应用原型，基于 Next.js + Supabase + Clerk 构建，支持流式�
 
 my-chat 是一个以聊天为核心的 Web 应用，目标是提供近实时的 AI 对话体验，并将会话内容、访问控制和接口安全一并纳入工程设计。它适合用于个人助手、知识问答、聊天机器人原型等场景，也可以作为 Next.js + AI 应用的代码示例进行展示。
 
+## 界面预览
+
+![浅色模式](./public/screenshot-light.png)
+![深色模式](./public/screenshot-dark.png)
+
+> 支持浅色/深色模式自动适配，提供舒适的夜间使用体验。
+
 ## 核心功能
 
 - 流式 AI 对话：使用 Server-Sent Events 逐 token 返回模型输出，提升响应体验

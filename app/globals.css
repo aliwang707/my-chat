@@ -38,7 +38,7 @@ html.dark body {
   }
 }
 
-/* ✅ Markdown 内容区跟随主题（移除 @apply） */
+/* Markdown 内容区跟随主题（移除 @apply） */
 .markdown-body {
   color: var(--color-gray-900);
 }
@@ -84,4 +84,51 @@ html.dark .markdown-body code:not(pre code) {
 
 .markdown-body code {
   word-break: break-all;
+}
+
+/* 自定义侧边栏滚动条（仅在 .sidebar-scroll 容器内生效） */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;               /* 滚动条宽度 */
+  height: 4px;              /* 水平滚动条高度（若有） */
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;  /* 轨道透明，不干扰背景 */
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;      /* 浅灰色滑块 */
+  border-radius: 10px;      /* 圆角 */
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;      /* 悬停加深 */
+}
+
+/* 暗色模式适配 */
+.dark .sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+.dark .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* 对于 Firefox（使用 thin 模式） */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.dark .sidebar-scroll {
+  scrollbar-color: #475569 transparent;
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
 }

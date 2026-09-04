@@ -1,15 +1,18 @@
 import { defineConfig } from 'vitest/config';
-import path from 'node:path';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
+  plugins: [react()],
   test: {
-    environment: 'node',
+    environment: 'jsdom',
     globals: true,
-    include: ['tests/**/*.test.ts'],
+    setupFiles: './vitest.setup.ts',
+    include: ['**/*.test.ts', '**/*.test.tsx'],
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname),
+      '@': path.resolve(__dirname, './'), // 让 @/ 指向项目根目录
     },
   },
 });

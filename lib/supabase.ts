@@ -34,7 +34,7 @@ export const env = parsedEnv.success
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
       SILICONFLOW_API_KEY: process.env.SILICONFLOW_API_KEY || '',
-      SILICONFLOW_BASE_URL: process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.com/v1',
+      SILICONFLOW_BASE_URL: process.env.SILICONFLOW_BASE_URL || 'https://api.siliconflow.cn/v1',
       AI_MODEL: process.env.AI_MODEL || 'Qwen/Qwen2.5-7B-Instruct',
       AI_MAX_TOKENS: Number(process.env.AI_MAX_TOKENS || 2048),
       AI_TEMPERATURE: Number(process.env.AI_TEMPERATURE || 0.7),
@@ -42,9 +42,16 @@ export const env = parsedEnv.success
     };
 
 // 业务层复用同一个服务端客户端，可以避免重复连接和状态漂移。
+if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error(
+    '❌ 关键环境变量缺失：NEXT_PUBLIC_SUPABASE_URL 或 SUPABASE_SERVICE_ROLE_KEY 未设置。' +
+    '请在 Vercel 环境变量中配置后再部署。'
+  );
+}
+
 export const supabase = createClient(
-  env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-  env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-role-key',
+  env.NEXT_PUBLIC_SUPABASE_URL,
+  env.SUPABASE_SERVICE_ROLE_KEY,
   {
     auth: {
       autoRefreshToken: false,

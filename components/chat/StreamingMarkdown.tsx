@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import toast from 'react-hot-toast';
@@ -17,7 +18,15 @@ const cleanMarkdown = (text: string): string => {
   return text.replace(/>\s*>{2,}/g, '> ');
 };
 
-// ========== 提取的子组件（用 any 接受所有属性，避免类型冲突） ==========
+// ========== 复制函数（提取到组件外部，引用稳定） ==========
+const copyCode = (code: string) => {
+  navigator.clipboard.writeText(code).then(
+    () => toast.success('代码已复制'),
+    () => toast.error('复制失败，请手动复制')
+  );
+};
+
+// ========== 子组件 ==========
 type CodeBlockProps = {
   className?: string;
   children: React.ReactNode;
@@ -64,7 +73,7 @@ const CodeBlock = ({ className, children, isDarkMode, onCopy, ...rest }: any) =>
   );
 };
 
-// 其他组件都接收任意 props，并透传（避免类型冲突）
+// 其他组件都接收任意 props，并透传
 const PreBlock = (props: any) => {
   return <div className="overflow-x-auto my-2" {...props} />;
 };
@@ -156,32 +165,19 @@ export const StreamingMarkdown = ({ content, isStreaming }: Props) => {
     setIsDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, []);
 
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code).then(
-      () => toast.success('代码已复制'),
-      () => toast.error('复制失败，请手动复制')
-    );
-  };
-
+  // 使用外部稳定的 copyCode，无需 useCallback
   const components = useMemo(
     () => createMarkdownComponents(isDarkMode, copyCode),
-    [isDarkMode, copyCode]
+    [isDarkMode] // 只依赖 isDarkMode，copyCode 是外部常量，引用永远不变
   );
-
-  if (isStreaming) {
-    const plainText = cleanMarkdown(content);
-    return (
-      <pre className="whitespace-pre-wrap wrap-break-word font-sans text-sm">
-        {plainText}
-      </pre>
-    );
-  }
 
   const cleanedContent = cleanMarkdown(content);
 
   return (
     <div className="text-sm">
-      <ReactMarkdown components={components}>{cleanedContent}</ReactMarkdown>
+      <ReactMarkdown components={components} rehypePlugins={[rehypeRaw]}>
+        {cleanedContent}
+      </ReactMarkdown>
     </div>
   );
 };

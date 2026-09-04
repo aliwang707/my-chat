@@ -6,13 +6,15 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "test": "vitest run"
+    "start": "next start"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.7.6",
+    "@next/env": "^16.3.4",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/vite": "^4.3.3",
     "lodash": "^4.18.1",
@@ -22,20 +24,27 @@
     "react-hot-toast": "^2.6.0",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@types/lodash": "^4.17.25",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.3.4",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4",
     "tsx": "^4.20.2",
     "typescript": "^5",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.9"
   }
 }

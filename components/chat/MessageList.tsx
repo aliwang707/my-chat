@@ -21,7 +21,7 @@ export const MessageList = ({ messages, loadingMessages, loading, onSelectQuickQ
 
   const getBubbleClass = (role: Message['role'], error?: boolean) => {
     if (role === 'user') {
-      return 'bg-blue-600 text-white rounded-tr-sm';
+      return 'bg-blue-600 dark:bg-blue-700 text-white rounded-tr-sm';
     }
     if (role === 'system') {
       return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-tl-sm';
@@ -30,16 +30,30 @@ export const MessageList = ({ messages, loadingMessages, loading, onSelectQuickQ
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 space-y-6" role="log" aria-live="polite" aria-label="聊天消息记录">
-      {loadingMessages ? (
-        <div className="flex justify-center py-8"><div className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-5 py-3 rounded-2xl animate-pulse">加载历史消息中...</div></div>
+    <div
+      className={`
+        flex-1 overflow-y-auto p-4 sm:p-6 pb-20 
+        ${messages.length === 0 ? 'flex flex-col items-center justify-center h-full' : 'space-y-6'}
+      `}
+      role="log"
+      aria-live="polite"
+      aria-label="聊天消息记录"
+    >
+      {loadingMessages && messages.length === 0 ? (
+        <div className="flex justify-center py-8">
+          <div className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-5 py-3 rounded-2xl animate-pulse">
+            加载历史消息中...
+          </div>
+        </div>
       ) : messages.length === 0 ? (
         <EmptyState onSelect={onSelectQuickQuestion} />
       ) : (
         messages.map(msg => (
           <div key={msg.id} className={`group flex items-start gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0 text-sm mt-1">🤖</div>
+              <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0 text-xs mt-1">
+  🤖
+</div>
             )}
             <div className={`
               rounded-2xl px-4 sm:px-5 py-3 
@@ -50,7 +64,11 @@ export const MessageList = ({ messages, loadingMessages, loading, onSelectQuickQ
               ${getBubbleClass(msg.role, msg.error)}
               ${msg.error ? 'border border-red-300 dark:border-red-700' : ''}
             `}>
-              <StreamingMarkdown content={msg.content} isStreaming={msg.isLoading} />
+              {msg.content === '' ? (
+                <TypingDots />
+              ) : (
+                <StreamingMarkdown content={msg.content} isStreaming={msg.isLoading} />
+              )}
             </div>
             {/* 为 user 和 assistant 消息都添加复制按钮，但系统错误消息不复制 */}
             {msg.role !== 'system' && !msg.isLoading && !msg.error && (
@@ -67,7 +85,6 @@ export const MessageList = ({ messages, loadingMessages, loading, onSelectQuickQ
           </div>
         ))
       )}
-      {loading && <TypingDots />}
       <div ref={messagesEndRef} />
     </div>
   );

@@ -2,7 +2,7 @@
 import { SignInButton, useUser } from '@clerk/nextjs';
 import { useEffect, useState, useCallback } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
-import { useSessions, ChatMessage } from '@/hooks/useSessions';
+import { useSessions } from '@/hooks/useSessions';
 import { useChatStream, Message } from '@/hooks/useChatStream';
 import { ChatErrorBoundary } from '@/components/chat/ChatErrorBoundary';
 import { Sidebar } from '@/components/chat/Sidebar';
@@ -40,20 +40,17 @@ export default function Home() {
 
 
 
-  // 页面初始化时从本地缓存恢复当前会话，并在登录状态稳定后拉取相关历史记录。
-  // 这里只依赖 isSignedIn，避免在同一用户会话中因为函数引用变化而重复触发加载。
+ 
   useEffect(() => {
-    if (!isSignedIn) return;
-    (async () => {
-      await loadSessions(true);
-      const saved = localStorage.getItem('currentChatSessionId');
-      if (saved) {
-        const list: ChatMessage[] | null = await loadSessionMessages(saved, true);
-        if (list) setMessages(list as Message[]);
-      }
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignedIn]);
+  if (!isSignedIn) return;
+  (async () => {
+    await loadSessions(true);
+    // 登录后默认进入新会话，不加载任何历史消息
+    createNewSession();
+    setMessages([]);
+  })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [isSignedIn]);
 
   const handleNewSession = () => {
     createNewSession();

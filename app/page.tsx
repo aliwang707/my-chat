@@ -1,6 +1,6 @@
 'use client';
 import { SignInButton, useUser } from '@clerk/nextjs';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback,useRef } from 'react';
 import { useDarkMode } from '@/hooks/useDarkMode';
 import { useSessions } from '@/hooks/useSessions';
 import { useChatStream, Message } from '@/hooks/useChatStream';
@@ -37,6 +37,7 @@ export default function Home() {
   );
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sessionRequestIdRef = useRef(0); 
 
 
 
@@ -60,12 +61,17 @@ export default function Home() {
   };
 
   const handleSelectSession = async (id: string) => {
-    setMessages([]);
-    const list = await loadSessionMessages(id, true);
-    if (list) setMessages(list as Message[]);
-    resetChat();
-    setSidebarOpen(false);
-  };
+  sessionRequestIdRef.current += 1;
+  const currentRequestId = sessionRequestIdRef.current;
+
+  setMessages([]);
+  const list = await loadSessionMessages(id, true);
+  if (currentRequestId !== sessionRequestIdRef.current) return;
+
+  if (list) setMessages(list as Message[]);
+  resetChat();
+  setSidebarOpen(false);
+};
 
   const handleDeleteConfirm = async (id: string) => {
     await deleteSession(id, true, currentSessionId, () => {
